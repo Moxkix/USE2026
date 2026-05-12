@@ -1,28 +1,3 @@
- const QR_LOG_URL = "https://qr-log-tribunal.moxkix.workers.dev";
-  (function enviarBeacon() {
-    if (!QR_LOG_URL) return;
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const codigosStr = params.get("codigos") || params.get("codes") || "";
-      const codigos = codigosStr.split(",").map((c) => c.trim()).filter(Boolean);
-      if (codigos.length === 0) return;
-      fetch(QR_LOG_URL.replace(/\/$/, "") + "/scan", {
-    if (!QR_LOG_URL) return;
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const codigosStr = params.get("codigos") || params.get("codes") || "";
-      const codigos = codigosStr.split(",").map((c) => c.trim()).filter(Boolean);
-      fetch(QR_LOG_URL.replace(/\/$/, "") + "/scan", {
-      if (codigos.length === 0) return;
-      fetch(QR_LOG_URL.replace(/\/$/, "") + "/scan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ codigos }),
-        keepalive: true,
-      }).catch(() => {});
-    } catch (e) {}
-  })();
-
 // Versión actualizada para 2026:
 //   - Muestra día y hora junto con el aula
 //   - Soporta ?codigos=A,B,C en la URL para mostrar varios resultados de una vez (QR personalizado)
