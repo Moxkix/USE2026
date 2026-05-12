@@ -1,5 +1,4 @@
  const QR_LOG_URL = "https://qr-log-tribunal.moxkix.workers.dev";
-
   (function enviarBeacon() {
     if (!QR_LOG_URL) return;
     try {
