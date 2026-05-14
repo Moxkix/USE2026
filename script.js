@@ -93,8 +93,7 @@
     while (resultDiv.firstChild) resultDiv.removeChild(resultDiv.firstChild);
 
     if (codigos.length === 0) {
-      resultDiv.textContent = 'Mesedez, sartu irakasgai baten kodea / Por favor, introduce un código de
-  asignatura';
+      resultDiv.textContent = 'Mesedez, sartu irakasgai baten kodea / Por favor, introduce un código de asignatura';
       return;
     }
     try {
