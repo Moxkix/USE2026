@@ -44,44 +44,80 @@ function bilingue(es, eu) {
 }
 
 // ── Tarjeta de resultado (Material 3 · bento accent verde) ─────────────
+// Estructura: ASIGNATURA (título grande) → aula / código / día / hora.
 function renderResultado(codigo, entry) {
   const card = document.createElement('div');
   card.className =
-    'relative bg-secondary-container/30 border border-secondary-fixed-dim rounded-2xl p-4 flex flex-col gap-2 overflow-hidden';
+    'relative bg-surface-container-lowest border border-outline-variant rounded-2xl p-4 flex flex-col gap-3 overflow-hidden shadow-sm';
 
-  // Banda lateral decorativa
+  // Banda lateral decorativa verde
   const banda = document.createElement('div');
-  banda.className = 'absolute top-0 left-0 w-1 h-full bg-secondary-fixed';
+  banda.className = 'absolute top-0 left-0 w-1.5 h-full bg-primary';
   card.appendChild(banda);
 
-  // Cabecera: aula + icono
-  const cab = document.createElement('div');
-  cab.className = 'flex items-start justify-between';
+  // Cabecera con título = ASIGNATURA grande
+  const cab = document.createElement('header');
+  cab.className = 'flex items-start justify-between gap-3 pl-1';
 
   const cabIzq = document.createElement('div');
-  cabIzq.className = 'flex flex-col';
+  cabIzq.className = 'flex flex-col min-w-0';
+
   const eyebrow = document.createElement('span');
-  eyebrow.className = 'text-[11px] font-semibold uppercase tracking-wider text-on-secondary-container';
-  eyebrow.textContent = 'Gela / Aula';
+  eyebrow.className =
+    'text-[11px] font-semibold uppercase tracking-wider text-primary';
+  eyebrow.textContent = 'Irakasgaia / Asignatura';
   cabIzq.appendChild(eyebrow);
 
-  const tituloAula = document.createElement('h3');
-  tituloAula.className = 'font-serif text-2xl font-semibold text-on-surface mt-0.5';
-  const aulaTxt = bilingue(entry.aula_es, entry.aula_eu);
-  tituloAula.textContent = aulaTxt || '—';
-  cabIzq.appendChild(tituloAula);
+  const asigTxt = bilingue(entry.asignatura_es, entry.asignatura_eu);
+  const tituloAsig = document.createElement('h3');
+  tituloAsig.className =
+    'font-serif text-xl sm:text-2xl font-semibold text-on-surface leading-tight mt-0.5 break-words';
+  tituloAsig.textContent = asigTxt || '—';
+  cabIzq.appendChild(tituloAsig);
+
   cab.appendChild(cabIzq);
 
   const icono = document.createElement('span');
-  icono.className = 'material-symbols-outlined text-secondary-fixed-dim text-[32px]';
-  icono.textContent = 'meeting_room';
+  icono.className =
+    'material-symbols-outlined text-primary text-[28px] shrink-0 mt-1';
+  icono.textContent = 'book';
   cab.appendChild(icono);
 
   card.appendChild(cab);
 
-  // Detalles: código, asignatura, día, hora
+  // Bloque destacado: AULA (la información más buscada)
+  const aulaTxt = bilingue(entry.aula_es, entry.aula_eu);
+  if (aulaTxt) {
+    const aulaBox = document.createElement('div');
+    aulaBox.className =
+      'bg-primary-container/40 border border-secondary-fixed-dim rounded-xl px-3 py-2.5 flex items-center gap-3';
+    const aulaIc = document.createElement('span');
+    aulaIc.className =
+      'material-symbols-outlined text-primary text-[28px] shrink-0';
+    aulaIc.textContent = 'meeting_room';
+    aulaBox.appendChild(aulaIc);
+
+    const aulaCol = document.createElement('div');
+    aulaCol.className = 'flex flex-col min-w-0';
+    const aulaEt = document.createElement('span');
+    aulaEt.className =
+      'text-[11px] font-semibold uppercase tracking-wider text-on-secondary-container';
+    aulaEt.textContent = 'Gela / Aula';
+    aulaCol.appendChild(aulaEt);
+
+    const aulaVal = document.createElement('span');
+    aulaVal.className =
+      'font-serif text-lg font-semibold text-on-surface leading-tight';
+    aulaVal.textContent = aulaTxt;
+    aulaCol.appendChild(aulaVal);
+
+    aulaBox.appendChild(aulaCol);
+    card.appendChild(aulaBox);
+  }
+
+  // Detalles: código, día, hora
   const detalles = document.createElement('div');
-  detalles.className = 'flex flex-col gap-1 mt-1';
+  detalles.className = 'flex flex-col gap-1.5';
 
   const fila = (icon, etiqueta, valor) => {
     if (!valor) return null;
@@ -93,7 +129,6 @@ function renderResultado(codigo, entry) {
     row.appendChild(ic);
     const txt = document.createElement('span');
     txt.className = 'text-sm';
-    // Construimos con textContent puro · nada de innerHTML
     const span1 = document.createElement('span');
     span1.className = 'opacity-70';
     span1.textContent = etiqueta + ': ';
@@ -109,10 +144,6 @@ function renderResultado(codigo, entry) {
   const filaCod = fila('badge', 'Kodea / Código', codigo);
   if (filaCod) detalles.appendChild(filaCod);
 
-  const asigTxt = bilingue(entry.asignatura_es, entry.asignatura_eu);
-  const filaAsig = fila('book', 'Irakasgaia / Asignatura', asigTxt);
-  if (filaAsig) detalles.appendChild(filaAsig);
-
   const diaTxt = bilingue(entry.dia_es, entry.dia_eu);
   const filaDia = fila('event', 'Eguna / Día', diaTxt);
   if (filaDia) detalles.appendChild(filaDia);
@@ -124,7 +155,7 @@ function renderResultado(codigo, entry) {
   const filaHora = fila('schedule', 'Ordua / Hora', hora);
   if (filaHora) detalles.appendChild(filaHora);
 
-  card.appendChild(detalles);
+  if (detalles.children.length > 0) card.appendChild(detalles);
   return card;
 }
 
@@ -269,7 +300,7 @@ function isAdmin() {
 
 // ── Bottom nav · cambia de pestaña visible ──────────────────────────────
 const TABS = {
-  buscar: ['seccionBuscar', 'seccionResultado', 'seccionMensaje'],
+  buscar: ['seccionBuscar', 'seccionResultado', 'seccionMensaje', 'seccionPlano'],
   info: [], // el botón ya enlaza al PDF arriba; aquí solo marcamos pestaña
   ayuda: ['seccionAyuda'],
 };
@@ -288,7 +319,7 @@ function activarTab(nombre) {
   }
 
   if (nombre === 'buscar') {
-    // Búsqueda + resultados (si hay) + mensaje (si hay)
+    // Búsqueda + resultados (si hay) + mensaje (si hay) + plano (siempre)
     document.getElementById('seccionBuscar')?.classList.remove('hidden');
     document.getElementById('seccionBuscar')?.classList.add('flex');
     const res = document.getElementById('seccionResultado');
@@ -299,6 +330,11 @@ function activarTab(nombre) {
     const msg = document.getElementById('seccionMensaje');
     if (msg && msg.querySelector('#mensaje')?.textContent?.trim()) {
       msg.classList.remove('hidden');
+    }
+    const plano = document.getElementById('seccionPlano');
+    if (plano) {
+      plano.classList.remove('hidden');
+      plano.classList.add('flex');
     }
   } else if (nombre === 'ayuda') {
     const ay = document.getElementById('seccionAyuda');

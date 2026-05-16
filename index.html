@@ -6,12 +6,12 @@
   <title>Azterketa Gelaren Kontsulta / Consulta de Aula de Examen · EHU</title>
   <meta name="theme-color" content="#006d3d" />
 
-  <!-- Content Security Policy: limita orígenes; solo lo imprescindible -->
+  <!-- Content Security Policy: estricta, sin inline scripts. -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' https://cdn.tailwindcss.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    font-src 'self' https://fonts.gstatic.com;
+    font-src 'self' https://fonts.gstatic.com data:;
     img-src 'self' data:;
     connect-src 'self' https://qr-log-tribunal.moxkix.workers.dev https://api.counterapi.dev;
     frame-ancestors 'none';
@@ -24,85 +24,57 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet" />
 
+  <!-- Tailwind Play CDN: el config DEBE ir DESPUÉS del CDN según la doc oficial -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    /* Material 3 palette · verde institucional EHU */
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: "#006d3d",
-            "on-primary": "#ffffff",
-            "primary-container": "#5fd790",
-            "on-primary-container": "#005b32",
-            secondary: "#226b3e",
-            "on-secondary": "#ffffff",
-            "secondary-container": "#a6f1b7",
-            "on-secondary-container": "#287042",
-            "secondary-fixed": "#a9f3ba",
-            "secondary-fixed-dim": "#8dd7a0",
-            error: "#ba1a1a",
-            "error-container": "#ffdad6",
-            "on-error-container": "#93000a",
-            background: "#fbf9f6",
-            "on-background": "#1b1c1a",
-            surface: "#fbf9f6",
-            "on-surface": "#1b1c1a",
-            "on-surface-variant": "#3e4a40",
-            "surface-container-lowest": "#ffffff",
-            "surface-container-low": "#f5f3f0",
-            "surface-container": "#f0eeea",
-            "surface-container-high": "#eae8e5",
-            "surface-container-highest": "#e4e2df",
-            "surface-variant": "#e4e2df",
-            outline: "#6d7a6f",
-            "outline-variant": "#bdcabd"
-          },
-          fontFamily: {
-            serif: ["Source Serif 4", "ui-serif", "Georgia", "serif"],
-            sans: ["Hanken Grotesk", "ui-sans-serif", "system-ui", "sans-serif"]
-          },
-          borderRadius: {
-            DEFAULT: "0.125rem",
-            lg: "0.25rem",
-            xl: "0.5rem",
-            "2xl": "0.75rem",
-            full: "9999px"
-          }
-        }
-      }
-    };
-  </script>
+  <script src="tailwind-config.js"></script>
 
   <style>
     body { background-color: #fbf9f6; }
     html { -webkit-text-size-adjust: 100%; }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     .filled { font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
-    /* Safe-area iOS */
     .pb-safe { padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+    /* Marca de agua institucional del fondo */
+    .watermark {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none; opacity: 0.05; z-index: 0;
+    }
+    .watermark img { width: min(60%, 280px); height: auto; filter: grayscale(1); }
   </style>
 </head>
 <body class="bg-background text-on-background font-sans min-h-screen flex flex-col antialiased">
 
-  <!-- TopAppBar -->
-  <header class="bg-primary text-on-primary sticky top-0 z-40 border-b border-outline-variant flex items-center px-4 w-full h-14 shadow-sm">
-    <div class="flex items-center gap-2 w-full max-w-md mx-auto">
-      <span class="material-symbols-outlined text-[24px]">school</span>
-      <h1 class="font-serif text-lg sm:text-xl font-semibold text-on-primary truncate">
-        EHU · PAU/USaP 2026
-      </h1>
+  <!-- TopAppBar · verde primario con logo blanco EHU -->
+  <header class="bg-primary text-on-primary sticky top-0 z-40 border-b border-primary/30 shadow-sm">
+    <div class="flex items-center gap-3 w-full max-w-md mx-auto px-4 h-16">
+      <img
+        src="blanco_mediano.jpg"
+        alt="EHU · Euskal Herriko Unibertsitatea"
+        class="h-9 w-auto shrink-0 select-none"
+        draggable="false"
+      />
+      <div class="flex flex-col min-w-0 leading-tight">
+        <span class="font-serif text-base sm:text-lg font-semibold truncate">PAU / USaP 2026</span>
+        <span class="text-[11px] uppercase tracking-wider opacity-80 truncate">
+          Gelaren kontsulta · Consulta de aula
+        </span>
+      </div>
     </div>
   </header>
 
   <!-- Main -->
   <main class="flex-grow flex flex-col relative pb-24">
+    <!-- Marca institucional muy sutil de fondo -->
+    <div class="watermark" aria-hidden="true">
+      <img src="blanco_mediano.jpg" alt="" />
+    </div>
 
     <div class="relative z-10 px-4 py-6 flex-grow flex flex-col gap-6 max-w-md mx-auto w-full">
 
       <!-- ▼▼▼ RESULTADOS (oculto hasta que haya algo que mostrar) ▼▼▼ -->
       <section id="seccionResultado" class="hidden flex-col gap-4">
-        <header class="flex flex-col gap-1 pt-2">
+        <header class="flex flex-col gap-1 pt-1">
           <h2 class="font-serif text-2xl font-semibold text-on-surface">
             Esleitutako gela / Aula asignada
           </h2>
@@ -113,7 +85,43 @@
         <div id="result" class="flex flex-col gap-3"></div>
       </section>
 
-      <!-- ▼▼▼ MENSAJE / ERROR (oculto por defecto) ▼▼▼ -->
+      <!-- ▼▼▼ PLANO DE PLANTA (siempre visible · placeholder por sede) ▼▼▼ -->
+      <section id="seccionPlano" class="flex flex-col gap-3">
+        <h2 class="font-serif text-xl font-semibold text-on-surface px-1">
+          Solairuko planoa / Plano de planta
+        </h2>
+        <div id="planoPlanta" class="bg-surface-container border border-outline-variant rounded-2xl overflow-hidden">
+          <div class="aspect-[16/10] bg-surface-container-high flex items-center justify-center text-on-surface-variant relative">
+            <div class="absolute inset-0 flex items-center justify-center opacity-30">
+              <span class="material-symbols-outlined text-[96px] text-primary">map</span>
+            </div>
+            <div class="relative z-10 text-center px-4">
+              <div class="font-serif text-base font-semibold text-on-surface">Sede</div>
+              <div class="text-xs mt-1 text-on-surface-variant">Sedearen arabera laster eguneratuko da / Se actualizará por sede.</div>
+            </div>
+          </div>
+          <div class="p-4 flex flex-col gap-3">
+            <div class="flex items-start gap-2 text-on-surface">
+              <span class="material-symbols-outlined text-[20px] mt-0.5 shrink-0 text-primary">location_on</span>
+              <span class="text-sm font-medium" id="planoSede">
+                Farmazia Fakultatea · Facultad de Farmacia (Vitoria-Gasteiz)
+              </span>
+            </div>
+            <a
+              id="btnMapa"
+              href="https://www.google.com/maps/search/?api=1&query=Facultad+de+Farmacia+UPV+EHU+Vitoria-Gasteiz"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-center gap-2 w-full bg-secondary text-on-secondary text-sm font-semibold rounded-full py-2.5 hover:bg-secondary/90 transition-colors"
+            >
+              <span class="material-symbols-outlined text-[18px]">map</span>
+              Google Maps-en ireki / Abrir en Google Maps
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ▼▼▼ MENSAJE / ERROR ▼▼▼ -->
       <section id="seccionMensaje" class="hidden">
         <div id="mensaje" class="bg-error-container text-on-error-container border border-error/30 rounded-xl p-4 text-sm"></div>
       </section>
@@ -139,7 +147,7 @@
         <h2 class="font-serif text-xl font-semibold text-on-surface px-1">
           Eskuzko bilaketa / Búsqueda manual
         </h2>
-        <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-4 flex flex-col gap-4">
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-4 flex flex-col gap-4 shadow-sm">
           <form id="formBuscar" class="flex flex-col gap-4" novalidate>
             <div class="flex flex-col gap-1.5">
               <label for="courseCode" class="text-sm font-semibold text-on-surface tracking-wide">
@@ -175,13 +183,13 @@
             </button>
           </form>
 
-          <div class="text-xs text-on-surface-variant text-center px-2 pt-1 border-t border-outline-variant/50">
+          <div class="text-xs text-on-surface-variant text-center px-2 pt-2 border-t border-outline-variant/50">
             QR kodea duzu? Mugikorraren kamera erabili / ¿Tienes el QR? Usa la cámara del móvil para escanearlo.
           </div>
         </div>
       </section>
 
-      <!-- ▼▼▼ AYUDA / INFO PANEL (oculto por defecto, se abre desde el nav) ▼▼▼ -->
+      <!-- ▼▼▼ AYUDA / INFO PANEL ▼▼▼ -->
       <section id="seccionAyuda" class="hidden flex-col gap-3">
         <h2 class="font-serif text-xl font-semibold text-on-surface px-1">
           Laguntza / Ayuda
