@@ -203,7 +203,10 @@ async function mostrarResultados(codigos) {
 
   try {
     const data = await cargarDatos();
-    const nodos = [];
+    // Recopilamos primero, ordenamos cronologicamente, y renderizamos despues.
+    // Clave de orden: fecha (yyyy-mm-dd) + hora_inicio. Si no hay fecha,
+    // caemos a dia_es + hora_inicio (orden lexico, peor pero estable).
+    const encontrados = [];
     const noEncontrados = [];
 
     for (const codBruto of codigos) {
@@ -213,11 +216,17 @@ async function mostrarResultados(codigos) {
         continue;
       }
       const entry = data[cod];
-      if (entry) nodos.push(renderResultado(cod, entry));
+      if (entry) encontrados.push({ codigo: cod, entry });
       else noEncontrados.push(codBruto);
     }
 
-    if (nodos.length === 0) {
+    encontrados.sort((a, b) => {
+      const claveA = (a.entry.fecha ?? a.entry.dia_es ?? '') + ' ' + (a.entry.hora_inicio ?? '');
+      const claveB = (b.entry.fecha ?? b.entry.dia_es ?? '') + ' ' + (b.entry.hora_inicio ?? '');
+      return claveA.localeCompare(claveB);
+    });
+
+    if (encontrados.length === 0) {
       seccionRes.classList.add('hidden');
       mostrarMensaje(
         'Irakasgaiaren kodea ez da aurkitu / Código de asignatura no encontrado',
@@ -225,7 +234,9 @@ async function mostrarResultados(codigos) {
       return;
     }
 
-    for (const n of nodos) resultDiv.appendChild(n);
+    for (const { codigo: cod, entry } of encontrados) {
+      resultDiv.appendChild(renderResultado(cod, entry));
+    }
     seccionRes.classList.remove('hidden');
     seccionRes.classList.add('flex');
 
